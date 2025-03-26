@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Keystroke Data</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    #keystrokes {
+      white-space: pre-wrap;
+      background: #f4f4f4;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Keystroke Data</h1>
+  <div id="keystrokes">Loading keystrokes...</div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // === enter youer firebase config ===
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",                  // 🔐 Replace securely
+      authDomain: "your-project-id.firebaseapp.com",
+      databaseURL: "https://your-project-id.firebaseio.com",
+      projectId: "your-project-id",
+      storageBucket: "your-project-id.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",      // 🔐 Replace securely
+      appId: "YOUR_APP_ID",                     // 🔐 Replace securely
+      measurementId: "YOUR_MEASUREMENT_ID"      // 🔐 Optional
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const keystrokesRef = ref(database, 'keystrokes');
+
+    onValue(keystrokesRef, (snapshot) => {
+      const keystrokesDiv = document.getElementById('keystrokes');
+      keystrokesDiv.innerHTML = '';
+
+      const data = snapshot.val();
+      if (data) {
+        Object.keys(data).forEach((key) => {
+          const entry = data[key];
+          keystrokesDiv.innerHTML += `<p><strong>${entry.timestamp}:</strong> ${entry.data}</p>`;
+        });
+      } else {
+        keystrokesDiv.innerHTML = 'No keystrokes found.';
+      }
+    });
+  </script>
+</body>
+</html>
